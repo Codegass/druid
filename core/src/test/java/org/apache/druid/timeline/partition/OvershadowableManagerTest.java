@@ -123,45 +123,33 @@ public class OvershadowableManagerTest
   }
 
   @Test
-  public void testFindOvershadowedBy()
+  public void testFindOvershadowedByOvershadowed()
   {
-    final List<PartitionChunk<OvershadowableInteger>> expectedOvershadowedChunks = new ArrayList<>();
-
-    // All chunks except the last one are in the overshadowed state
-    PartitionChunk<OvershadowableInteger> chunk = newNonRootChunk(0, 2, 1, 1);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(0, 3, 2, 1);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(0, 5, 3, 1);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(5, 8, 1, 1);
-    expectedOvershadowedChunks.add(chunk);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(8, 11, 2, 1);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(5, 11, 3, 1);
-    manager.addChunk(chunk);
-    chunk = newNonRootChunk(0, 12, 5, 1);
-    manager.addChunk(chunk);
+    setupFindOvershadowedBy();
 
     List<AtomicUpdateGroup<OvershadowableInteger>> overshadowedGroups = manager.findOvershadowedBy(
-        RootPartitionRange.of(2, 10),
-        (short) 10,
-        State.OVERSHADOWED
+            RootPartitionRange.of(2, 10),
+            (short) 10,
+            State.OVERSHADOWED
     );
     Assert.assertEquals(
-        expectedOvershadowedChunks.stream().map(AtomicUpdateGroup::new).collect(Collectors.toList()),
-        overshadowedGroups
+            expectedOvershadowedChunks.stream().map(AtomicUpdateGroup::new).collect(Collectors.toList()),
+            overshadowedGroups
     );
+  }
 
-    overshadowedGroups = manager.findOvershadowedBy(
-        RootPartitionRange.of(2, 10),
-        (short) 10,
-        State.VISIBLE
+  @Test
+  public void testFindOvershadowedByVisible()
+  {
+    setupFindOvershadowedBy();
+    List<AtomicUpdateGroup<OvershadowableInteger>> overshadowedGroups = manager.findOvershadowedBy(
+            RootPartitionRange.of(2, 10),
+            (short) 10,
+            State.VISIBLE
     );
     Assert.assertEquals(
-        Collections.emptyList(),
-        overshadowedGroups
+            Collections.emptyList(),
+            overshadowedGroups
     );
   }
 
@@ -1104,5 +1092,25 @@ public class OvershadowableManagerTest
   private int nextNonRootPartitionId()
   {
     return nextNonRootPartitionId++;
+  }
+
+  public void setupFindOvershadowedBy()
+  {
+    // All chunks except the last one are in the overshadowed state
+    PartitionChunk<OvershadowableInteger> chunk = newNonRootChunk(0, 2, 1, 1);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(0, 3, 2, 1);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(0, 5, 3, 1);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(5, 8, 1, 1);
+    expectedOvershadowedChunks.add(chunk);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(8, 11, 2, 1);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(5, 11, 3, 1);
+    manager.addChunk(chunk);
+    chunk = newNonRootChunk(0, 12, 5, 1);
+    manager.addChunk(chunk);
   }
 }
