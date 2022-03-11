@@ -187,10 +187,10 @@ public class SqlSegmentsMetadataManagerTest
   public void testPollOnDemand()
   {
     DataSourcesSnapshot dataSourcesSnapshot = sqlSegmentsMetadataManager.getDataSourcesSnapshot();
-    Assert.assertNull(dataSourcesSnapshot);
+    Assert.assumeThat(dataSourcesSnapshot,is(nullValue));
     // This should return false and not wait/poll anything as we did not schedule periodic poll
-    Assert.assertFalse(sqlSegmentsMetadataManager.useLatestSnapshotIfWithinDelay());
-    Assert.assertNull(dataSourcesSnapshot);
+    Assert.assumeFalse(sqlSegmentsMetadataManager.useLatestSnapshotIfWithinDelay());
+    Assert.assumeThat(dataSourcesSnapshot,is(nullValue));
     // This call will force on demand poll
     sqlSegmentsMetadataManager.forceOrWaitOngoingDatabasePoll();
     Assert.assertFalse(sqlSegmentsMetadataManager.isPollingDatabasePeriodically());
